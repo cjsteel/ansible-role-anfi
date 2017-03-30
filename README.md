@@ -2,7 +2,7 @@
 ansible-role-afni
 =================
 
-An Ansible role to install and manage **ANFI** (Analysis of Functional NeuroImages)
+An Ansible role to install and manage **ANFI** (Analysis of Functional Neuro Images)
 
 
 Description

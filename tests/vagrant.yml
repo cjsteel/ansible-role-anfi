@@ -1,0 +1,37 @@
+# roles/afni/tests/vagrant.yml
+---
+- hosts: all
+  remote_user: vagrant
+  become: false # or local directory creation will fail
+  pre_tasks:
+
+    - set_fact: fact_controller_user="{{ lookup('env','USER') }}"
+    - debug: var=fact_controller_user
+
+    - set_fact: fact_controller_home="{{ lookup('env','HOME') }}"
+    - debug: var=fact_controller_home
+
+  vars:
+
+    - afni_remote_user : 'ubuntu'
+    - afni_shell: 'tcsh' # 'bash'...
+    - afni_shell_path: chsh -s /bin/{{ afni_shell }}
+
+# package
+
+    - afni_ver           : '1.0.2-2'
+    - afni_pkg           : 'libxp6_{{ afni_ver }}_{{ afni_arch }}.deb'
+    - afni_deb_url       : 'http://mirrors.kernel.org/ubuntu/pool/main/libx/libxp/{{ afni_pkg }}'
+    - afni_resources_dir : 'src/afni/{{ afni_ver }}'
+  
+#    - skel_entries:
+#      - path: "/etc/skel/.ssh"
+#        mode: "0700"
+#        state: "directory"
+#      - path: "/etc/skel/passwd"
+#        src: "/etc/passwd"
+#        state: "link"
+
+  roles:
+    - ../../
+

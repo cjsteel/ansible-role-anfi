@@ -1,0 +1,13 @@
+---
+# defaults file for ansible-role-afni
+
+## Installation options
+
+afni_tcsh_support  : true
+afni_motif_support : true
+afni_gnome_stuff   : true
+afni_opengl_option : true
+
+afni_ver  : '1.0.2-2'
+afni_resources_dir : '{{ fact_controller_home }}/src/afni/{{ afni_ver }}'
+ 

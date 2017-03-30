@@ -1,0 +1,100 @@
+---
+# tasks file for ansible-role-afni
+
+# install any requirements
+
+## Update the apt-cache
+
+- name: "update apt cache"
+  become: true
+  apt: update_cache=yes cache_valid_time=43200
+  tags: [ 'packages', 'ants-requirements' ]
+
+## Ensure requirements are installed
+
+### tcsh stuff
+
+- name: "ensure tcsh support installed"
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - tcsh
+    - xfonts-base
+    - python-qt4
+  when: afni_tcsh_support == true
+  tags: [ 'packages', 'afni-requirements', 'tcsh' ]
+
+### motif ( libmotif-common ) stuff
+
+- name: "ensure motif requirements are installed"
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - libxm4
+    - libuil4
+    - libmrm4
+    - libmotif-common
+    - libmotif-dev
+    - motif-clients
+  when: afni_motif_support == true
+  tags: [ 'packages', 'afni-requirements', 'tcsh' ]
+
+### gnome stuff?
+
+- name: "ensure gnome stuff is installed"
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - gsl-bin
+    - netpbm
+    - gnome-tweak-tool
+    - libjpeg62
+  when: afni_gnome_stuff == true
+  tags: [ 'packages', 'afni-requirements', 'tcsh' ]
+
+### opengl option
+
+- name: "ensure optional opengl stuff is installed"
+  become: true
+  apt: name={{ item }} state=present
+  with_items:
+    - libglu1-mesa
+    - mesa-utils
+    - freeglut3
+  when: afni_opengl_option == true
+  tags: [ 'packages', 'afni-option', 'tcsh' ]
+
+## Create link
+
+- name: "create link 'ln -s /usr/lib/x86_64-linux-gnu/libgsl.so /usr/lib/libgsl.so.0'"
+  become: true
+  file:
+    src: '/usr/lib/x86_64-linux-gnu/libgsl.so'
+    dest: '/usr/lib/libgsl.so.0'
+    state: link
+    force: yes
+
+##
+
+- name: "Create resource directory on targeted system"
+  file:
+    path: '{{ afni_resources_dir }}'
+    state: directory
+    mode: 0755
+
+## Download libxp61.0.2-2amd64.deb
+
+- name: "Download libxp61.0.2-2amd64.deb"
+  get_url:
+    url : 'http://mirrors.kernel.org/ubuntu/pool/main/libx/libxp/libxp6_1.0.2-2_amd64.deb'
+    dest: '{{ afni_resources_dir }}/'
+  tags: [ 'packages', 'display' ]
+
+- name: "Install libxp61.0.2-2amd64.deb"
+  become: true
+  apt:
+    deb: '{{ afni_resources_dir }}/libxp6_1.0.2-2_amd64.deb'
+    state: present
+  tags: [ 'packages', 'libxp6_1.0.2-2_amd64.deb' ]
+
+
